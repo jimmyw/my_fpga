@@ -9,6 +9,7 @@ SB_HFOSC inthosc (
   .CLKHFEN(1'b1),
   .CLKHF(clk)
 );
+defparam inthosc.CLKHF_DIV = "0b01";
 
 localparam  counter_width = 32;
 
@@ -36,7 +37,7 @@ assign r_val = (phase == 0) ? pwm_max_div4 + (3 * fade_div4) :
                (phase == 1) ? pwm_max - fade :
                (phase == 3) ? fade_div4 :
                0;
-              
+
 assign g_val = (phase == 0) ? pwm_max_div4 - fade_div4:
                (phase == 1) ? fade :
                (phase == 2) ? pwm_max - fade :
