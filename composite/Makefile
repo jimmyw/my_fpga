@@ -9,7 +9,7 @@ ICEPROG = iceprog
 
 all: $(PROJ).bin
 
-%.json: %.v
+%.json: %.v composite.v
 	yosys -q -p 'synth_ice40 -top top -json $@' $<
 
 %.asc: $(PIN_DEF) %.json

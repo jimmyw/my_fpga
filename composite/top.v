@@ -14,11 +14,12 @@ SB_HFOSC inthosc (
   .CLKHFEN(1'b1),
   .CLKHF(clk)
 );
+// Hard divide by 1, makes it 24Mhz
 defparam inthosc.CLKHF_DIV = "0b01";
 
 wire clock_out;
 reg[27:0] counter=28'd0;
-parameter DIVISOR = 28'd32;
+parameter DIVISOR = 28'd2;
 
 always @(posedge clk)
 begin
@@ -34,6 +35,7 @@ begin
 end
 
 assign debug = clock_out;
+// Takes a clock if 78.750khz
 composite c(clock_out, vout, sync_);
 
 
