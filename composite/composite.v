@@ -87,7 +87,7 @@ end
 
 // Line sync pulse with is 4.7us (62 samples)
 //wire y_active = (ypos > 22 && ypos < 310) || (ypos > 335 && ypos < 624);
-wire line_sync_pulse = line_sync  && half_scanline[0] == 0 && pos < 56;
+wire line_sync_pulse = line_sync  && half_scanline[0] == 0 && pos < 57;
 
 // Short sync pulse is 2.35us (31 samples)
 wire short_sync_pulse = short_sync && pos < 31;
@@ -101,8 +101,11 @@ wire long_sync_pulse = long_sync && pos < 364;
 // Active line in active display
 //assign vout = active;//(xpos == 139 || xpos == 831);
 //assign vout = 1;
+parameter HORIZ_ACTIVE_START = 122;
+parameter HORIZ_ACTIVE_END = 740;
+
 assign sync_ = !(short_sync_pulse || long_sync_pulse || line_sync_pulse);
-assign vout = active && ((xpos >= 139 && xpos <= 239) || (xpos >= 600 && xpos <= 700) || (xpos >= 139 && ypos < 100 && xpos <= 700));
+assign vout = active && ((xpos >= HORIZ_ACTIVE_START && xpos <= 239) || (xpos >= 600 && xpos <= HORIZ_ACTIVE_END) || (xpos >= HORIZ_ACTIVE_START && ypos < 100 && xpos <= HORIZ_ACTIVE_END));
 //||
   //          long_sync_pulse ||
     //        line_sync_pulse);
