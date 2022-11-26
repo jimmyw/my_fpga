@@ -34,9 +34,9 @@ begin
     clock_out <= (counter<DIVISOR/2) ? 1'b1 : 1'b0;
 end
 
-assign debug = clock_out;
+//assign debug = clock_out;
 // Takes a clock if 78.750khz
-composite c(clock_out, vout, sync_);
+composite c(clock_out, vout, sync_, debug);
 
 
 

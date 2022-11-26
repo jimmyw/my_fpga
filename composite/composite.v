@@ -2,11 +2,13 @@
 
 module composite (
     input clk10, // optimal is 13.34Mhz, fed by 12Mhz
-    output vout, sync_
+    output vout, sync_, debug
 );
 
 // http://www.batsocks.co.uk/readme/video_timing.htm
 // https://web.archive.org/web/20190920131436/http://www.radios-tv.co.uk:80/Pembers/World-TV-Standards/Line-Standards.html
+// https://web.archive.org/web/20180714045345if_/http://www.radios-tv.co.uk:80/Pembers/World-TV-Standards/HBI.pdf
+// https://web.archive.org/web/20170614080644if_/http://www.radios-tv.co.uk/Pembers/World-TV-Standards/VBI-625-PAL.pdf
 
 reg [10:0] xpos;
 reg [10:0] ypos;
@@ -64,20 +66,20 @@ always @(posedge clk10) begin
     else
         line_sync <= 0;
 
-    if (half_scanline >= 13 && half_scanline <= 619) begin
+    if (half_scanline >= 45 && half_scanline <= 622) begin
         active <= 1;
         if (half_scanline[0] == 0)
             xpos <= pos;
         else
            xpos <= pos + (765/2);
-        ypos <= half_scanline - 13;
-    end else if (half_scanline >= 640 && half_scanline <= 1244) begin
+        ypos <= half_scanline - 45;
+    end else if (half_scanline >= 670 && half_scanline <= 1245) begin
         active <= 1;
         if (half_scanline[0] == 0)
             xpos <= pos;
         else
            xpos <= pos + (765/2);
-        ypos <= half_scanline - 640;
+        ypos <= half_scanline - 670;
     end else begin
         active <= 0;
     end
@@ -89,11 +91,13 @@ end
 //wire y_active = (ypos > 22 && ypos < 310) || (ypos > 335 && ypos < 624);
 wire line_sync_pulse = line_sync  && half_scanline[0] == 0 && pos < 57;
 
+
+
 // Short sync pulse is 2.35us (31 samples)
-wire short_sync_pulse = short_sync && pos < 31;
+wire short_sync_pulse = short_sync && pos < 27;
 
 // Long sync pulse is 27.3us (364 samples)
-wire long_sync_pulse = long_sync && pos < 364;
+wire long_sync_pulse = long_sync && pos < 330;
 
 
 //wire active = y_active && xpos > 139 && xpos <= 831;
@@ -106,6 +110,8 @@ parameter HORIZ_ACTIVE_END = 740;
 
 assign sync_ = !(short_sync_pulse || long_sync_pulse || line_sync_pulse);
 assign vout = active && ((xpos >= HORIZ_ACTIVE_START && xpos <= 239) || (xpos >= 600 && xpos <= HORIZ_ACTIVE_END) || (xpos >= HORIZ_ACTIVE_START && ypos < 100 && xpos <= HORIZ_ACTIVE_END));
+assign debug = half_scanline >= 0 && half_scanline < 10;
+
 //||
   //          long_sync_pulse ||
     //        line_sync_pulse);
