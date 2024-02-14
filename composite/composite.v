@@ -20,16 +20,9 @@ reg [11:0] half_scanline = 11'b0;
 reg [11:0] pos = 11'b0;
 
 
-reg [0:8-1] bmap [8];
+reg [0:1] bmap [64*32];
 initial begin  // big endian vector, so we can write initial block left to right
-    bmap[0]  = 8'b1111_1100;
-    bmap[1]  = 8'b1100_0000;
-    bmap[2]  = 8'b1100_0000;
-    bmap[3]  = 8'b1111_1000;
-    bmap[4]  = 8'b1100_0000;
-    bmap[5]  = 8'b1100_0000;
-    bmap[6]  = 8'b1100_0011;
-    bmap[7]  = 8'b0000_0011;
+    $readmemb("frame.txt", bmap);
 end
 
 always @(posedge clk10) begin
@@ -123,12 +116,19 @@ parameter HORIZ_ACTIVE_START = 122;
 //parameter HORIZ_ACTIVE_END = 740;
 parameter HORIZ_ACTIVE_END = HORIZ_ACTIVE_START + 512 - 1;
 
-parameter VERT_ACTIVE_END = 512;
+parameter VERT_ACTIVE_END = 624;
 
 assign sync_ = !(short_sync_pulse || long_sync_pulse || line_sync_pulse);
 //assign vout = active && ((xpos >= HORIZ_ACTIVE_START && xpos <= 239) || (xpos >= 600 && xpos <= HORIZ_ACTIVE_END) || (xpos >= HORIZ_ACTIVE_START && ypos < 100 && xpos <= HORIZ_ACTIVE_END));
 
-assign vout = active && xpos >= HORIZ_ACTIVE_START && xpos < HORIZ_ACTIVE_END && ypos < VERT_ACTIVE_END  && bmap[ypos >> 6][(xpos - HORIZ_ACTIVE_START) >> 6];
+wire pixel_x = (xpos - HORIZ_ACTIVE_START) >> 3;
+wire pixel_y = (ypos >> 4);
+
+assign vout = active &&
+                xpos >= HORIZ_ACTIVE_START &&
+                xpos < HORIZ_ACTIVE_END &&
+                ypos < VERT_ACTIVE_END  &&
+                bmap[ ];
 assign debug = half_scanline >= 0 && half_scanline < 10;
 
 //||
